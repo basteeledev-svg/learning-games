@@ -5,6 +5,16 @@ class GamesData {
   static final List<Game> allGames = [
     // Math Games
     Game(
+      id: 'jetpack_math',
+      name: 'Jetpack Math',
+      description: 'Help animals jump across platforms by solving multiplication problems!',
+      gradeLevel: GradeLevel.grade2,
+      subject: Subject.math,
+      icon: Icons.rocket,
+      color: Colors.indigo,
+      route: '/jetpack_math',
+    ),
+    Game(
       id: 'number_match',
       name: 'Number Match',
       description: 'Match numbers with their quantities in this fun counting game',
@@ -20,7 +30,7 @@ class GamesData {
       gradeLevel: GradeLevel.grade1,
       subject: Subject.math,
       icon: Icons.add_circle,
-      color: Colors.indigo,
+      color: Colors.lightBlue,
     ),
     Game(
       id: 'multiplication_maze',

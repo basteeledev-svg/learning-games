@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/game.dart';
+import '../games/jetpack_math/jetpack_math_game.dart';
 
 class GameCard extends StatelessWidget {
   final Game game;
@@ -20,12 +21,24 @@ class GameCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: onTap ?? () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${game.name} - Coming soon!'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          if (game.route != null) {
+            // Navigate to the game
+            if (game.id == 'jetpack_math') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const JetpackMathGame(),
+                ),
+              );
+            }
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('${game.name} - Coming soon!'),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          }
         },
         borderRadius: BorderRadius.circular(16),
         child: Container(
