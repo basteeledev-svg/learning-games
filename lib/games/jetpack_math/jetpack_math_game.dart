@@ -412,19 +412,23 @@ class _JetpackMathGameState extends State<JetpackMathGame>
           yPos = baseY - (jumpHeight * (1 - (jumpProgress - 0.5).abs() * 2));
         }
         
-        return Positioned(
-          left: xPos - 30,
-          top: yPos,
-          child: Column(
-            children: [
-              AnimalCharacter(
-                type: characterType,
-                size: 60,
+        return Stack(
+          children: [
+            Positioned(
+              left: xPos - 30,
+              top: yPos,
+              child: Column(
+                children: [
+                  AnimalCharacter(
+                    type: characterType,
+                    size: 60,
+                  ),
+                  const SizedBox(height: 4),
+                  const JetpackWidget(size: 40),
+                ],
               ),
-              const SizedBox(height: 4),
-              const JetpackWidget(size: 40),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );
