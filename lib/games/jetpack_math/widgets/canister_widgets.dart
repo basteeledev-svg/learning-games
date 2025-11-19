@@ -12,32 +12,21 @@ class CanisterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 50,
-      height: 70,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isSelected
-              ? [Colors.amber.shade300, Colors.amber.shade600]
-              : [Colors.blue.shade300, Colors.blue.shade600],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isSelected ? Colors.amber.shade800 : Colors.blue.shade800,
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        ColorFiltered(
+          colorFilter: isSelected
+              ? ColorFilter.mode(Colors.amber.shade400, BlendMode.modulate)
+              : const ColorFilter.mode(Colors.white, BlendMode.modulate),
+          child: Image.asset(
+            'assets/images/Items/canisterpicture.png',
+            width: 50,
+            height: 70,
+            fit: BoxFit.contain,
           ),
-        ],
-      ),
-      child: Center(
-        child: Text(
+        ),
+        Text(
           number.toString(),
           style: TextStyle(
             fontSize: 24,
@@ -45,14 +34,14 @@ class CanisterWidget extends StatelessWidget {
             color: Colors.white,
             shadows: [
               Shadow(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withOpacity(0.8),
                 offset: const Offset(1, 1),
-                blurRadius: 2,
+                blurRadius: 3,
               ),
             ],
           ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -192,46 +181,142 @@ class JetpackControlPanel extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           // Title
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.rocket_launch, color: Colors.white, size: 24),
-              const SizedBox(width: 8),
-              const Text(
-                'Jetpack Controls',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
+          const Text(
+            'Jetpack Controls',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 16),
           
-          // Drop slots
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          // Jetpack image with drop slots
+          Stack(
+            alignment: Alignment.center,
             children: [
-              DropSlot(
-                label: 'Number of\nJumps',
-                value: selectedNumJumps,
-                onClear: onClearJumps,
+              // Jetpack background image
+              Image.asset(
+                'assets/images/Items/jetpackpicture.png',
+                height: 150,
+                fit: BoxFit.contain,
               ),
-              const SizedBox(width: 16),
-              const Text(
-                '×',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              // Drop slots positioned on the jetpack
+              Positioned(
+                left: 40,
+                top: 40,
+                child: Column(
+                  children: [
+                    const Text(
+                      'Number of\nJumps',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black,
+                            offset: Offset(1, 1),
+                            blurRadius: 2,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    GestureDetector(
+                      onTap: selectedNumJumps != null ? onClearJumps : null,
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: selectedNumJumps != null
+                              ? Colors.green.shade100.withOpacity(0.9)
+                              : Colors.white.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2,
+                          ),
+                        ),
+                        child: Center(
+                          child: selectedNumJumps != null
+                              ? Text(
+                                  selectedNumJumps.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                )
+                              : Icon(
+                                  Icons.add,
+                                  size: 24,
+                                  color: Colors.white.withOpacity(0.5),
+                                ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 16),
-              DropSlot(
-                label: 'Size of\nJumps',
-                value: selectedJumpSize,
-                onClear: onClearSize,
+              Positioned(
+                right: 40,
+                top: 40,
+                child: Column(
+                  children: [
+                    const Text(
+                      'Size of\nJumps',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black,
+                            offset: Offset(1, 1),
+                            blurRadius: 2,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    GestureDetector(
+                      onTap: selectedJumpSize != null ? onClearSize : null,
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: selectedJumpSize != null
+                              ? Colors.green.shade100.withOpacity(0.9)
+                              : Colors.white.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2,
+                          ),
+                        ),
+                        child: Center(
+                          child: selectedJumpSize != null
+                              ? Text(
+                                  selectedJumpSize.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                )
+                              : Icon(
+                                  Icons.add,
+                                  size: 24,
+                                  color: Colors.white.withOpacity(0.5),
+                                ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

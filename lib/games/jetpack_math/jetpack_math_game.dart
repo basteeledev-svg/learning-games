@@ -15,19 +15,18 @@ class JetpackMathGame extends StatefulWidget {
 class _JetpackMathGameState extends State<JetpackMathGame>
     with SingleTickerProviderStateMixin {
   late JetpackGameState gameState;
-  late AnimalType characterType;
   late AnimationController _animationController;
   late Animation<double> _jumpAnimation;
   
   int currentJumpIndex = 0;
   bool isAnimating = false;
   JumpResult? jumpResult;
+  bool isJetpackOn = false;
 
   @override
   void initState() {
     super.initState();
     gameState = JetpackGameState();
-    characterType = AnimalType.random();
     gameState.generateNewProblem();
     
     _animationController = AnimationController(
@@ -39,6 +38,16 @@ class _JetpackMathGameState extends State<JetpackMathGame>
       parent: _animationController,
       curve: Curves.easeInOutQuad,
     );
+    
+    _animationController.addListener(() {
+      // Turn jetpack on when going up, off when coming down
+      final shouldBeOn = _jumpAnimation.value < 0.5;
+      if (shouldBeOn != isJetpackOn) {
+        setState(() {
+          isJetpackOn = shouldBeOn;
+        });
+      }
+    });
   }
 
   @override
@@ -257,13 +266,13 @@ class _JetpackMathGameState extends State<JetpackMathGame>
 
   void _nextProblem() {
     setState(() {
-      characterType = AnimalType.random();
       gameState.generateNewProblem();
       gameState.selectedNumJumps = null;
       gameState.selectedJumpSize = null;
       gameState.hasJumped = false;
       jumpResult = null;
       currentJumpIndex = 0;
+      isJetpackOn = false;
     });
   }
 
@@ -305,27 +314,14 @@ class _JetpackMathGameState extends State<JetpackMathGame>
           Expanded(
             flex: 2,
             child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.lightBlue.shade200,
-                    Colors.lightBlue.shade50,
-                  ],
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/backgrounds/citybackground.png'),
+                  fit: BoxFit.cover,
                 ),
               ),
               child: Stack(
                 children: [
-                  // Background
-                  CustomPaint(
-                    size: Size.infinite,
-                    painter: GameBoardPainter(
-                      backgroundType: gameState.backgroundType,
-                      platforms: problem.platforms,
-                    ),
-                  ),
-                  
                   // Platforms
                   _buildPlatforms(problem.platforms),
                   
@@ -358,25 +354,44 @@ class _JetpackMathGameState extends State<JetpackMathGame>
   Widget _buildPlatforms(List<int> platforms) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final platformWidth = 80.0;
+        final platformWidth = 100.0;
         final spacing = (constraints.maxWidth - platformWidth) / (platforms.length + 1);
         
         return Stack(
           children: List.generate(platforms.length, (index) {
             final xPos = spacing * (index + 1);
-            final yPos = constraints.maxHeight - 100.0 - (index * 15);
-            
-            final shouldHighlight = gameState.hasJumped &&
-                gameState.selectedJumpSize != null &&
-                currentJumpIndex >= index &&
-                (index + 1) * gameState.selectedJumpSize! == platforms[index];
+            final yPos = constraints.maxHeight - 120.0 - (index * 20);
             
             return Positioned(
               left: xPos - platformWidth / 2,
               top: yPos,
-              child: PlatformWidget(
-                number: platforms[index],
-                isHighlighted: shouldHighlight,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/Items/buildingplatform.png',
+                    width: platformWidth,
+                    height: 50,
+                  ),
+                  Positioned(
+                    top: 15,
+                    child: Text(
+                      platforms[index].toString(),
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black.withOpacity(0.8),
+                            offset: const Offset(2, 2),
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             );
           }),
@@ -388,7 +403,7 @@ class _JetpackMathGameState extends State<JetpackMathGame>
   Widget _buildCharacter(List<int> platforms) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final platformWidth = 80.0;
+        final platformWidth = 100.0;
         final spacing = (constraints.maxWidth - platformWidth) / (platforms.length + 1);
         
         double xPos;
@@ -398,15 +413,16 @@ class _JetpackMathGameState extends State<JetpackMathGame>
           // Starting position
           xPos = 40;
           yPos = constraints.maxHeight - 200;
+          isJetpackOn = false;
         } else {
           // Calculate position based on current jump
           final targetIndex = currentJumpIndex;
           final baseX = spacing * (targetIndex + 1);
-          final baseY = constraints.maxHeight - 160.0 - (targetIndex * 15);
+          final baseY = constraints.maxHeight - 180.0 - (targetIndex * 20);
           
           // Animate the jump
           final jumpProgress = _jumpAnimation.value;
-          final jumpHeight = 60.0;
+          final jumpHeight = 80.0;
           
           xPos = baseX;
           yPos = baseY - (jumpHeight * (1 - (jumpProgress - 0.5).abs() * 2));
@@ -415,17 +431,14 @@ class _JetpackMathGameState extends State<JetpackMathGame>
         return Stack(
           children: [
             Positioned(
-              left: xPos - 30,
+              left: xPos - 40,
               top: yPos,
-              child: Column(
-                children: [
-                  AnimalCharacter(
-                    type: characterType,
-                    size: 60,
-                  ),
-                  const SizedBox(height: 4),
-                  const JetpackWidget(size: 40),
-                ],
+              child: Image.asset(
+                isJetpackOn 
+                    ? 'assets/images/characters/pandajetpackon.png'
+                    : 'assets/images/characters/pandajetpackoff.png',
+                width: 80,
+                height: 80,
               ),
             ),
           ],
